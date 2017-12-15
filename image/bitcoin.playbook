@@ -1,0 +1,19 @@
+---
+- hosts: all
+  tasks:
+    - file:
+        path:  "/usr/local/bin/{{ item }}"
+        owner: "root"
+        group: "root"
+        mode:  "0755"
+      with_items:
+        - "bitcoin-cli"
+        - "bitcoin-qt"
+        - "bitcoin-tx"
+        - "bitcoind"
+        - "test_bitcoin"
+    - user:
+        name:  "bitcoin"
+        state: "present"
+        home:  "/var/lib/bitcoin"
+        uid:   1061

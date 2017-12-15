@@ -1,0 +1,9 @@
+---
+- hosts: all
+  tasks:
+    - file:
+        dest:  "~/.bitcoin"
+        state: "directory"
+    - template:
+        src:   "bitcoin.conf.j2"
+        dest:  "~/.bitcoin/bitcoin.conf"
