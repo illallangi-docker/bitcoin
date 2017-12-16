@@ -1,8 +1,8 @@
-FROM illallangi/base:latest as build
+FROM illallangi/ansible:latest as build
 COPY build/* /etc/ansible.d/build/
 RUN /usr/local/bin/ansible-runner.sh build
 
-FROM illallangi/base:latest as image
+FROM illallangi/ansible:latest as image
 
 COPY --from=build /usr/local/src/*.tar.gz /usr/local/src/
 COPY --from=build /usr/local/src/bitcoin-0.15.1/bin/bitcoin-cli /usr/local/bin/
