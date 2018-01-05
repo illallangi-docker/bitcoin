@@ -1,9 +1,37 @@
 ---
 - hosts: all
   tasks:
-    - file:
-        dest:  "~/.bitcoin"
+    - name: "Check all required variables are defined"
+      fail:
+        msg: "{{ item }} is not defined. Typically you should run with: '-e {{ item }}=value'"
+      when:
+        - ansible_env[item] is not defined
+      with_items:
+        - "BITCOIN_TIMEZONE"
+    - name: "Create folders"
+      file:
+        name:  "{{ item.name }}"
         state: "directory"
+        owner: "{{ ansible_env.USER | default('docker') }}"
+        group: "{{ ansible_env.GROUP | default(ansible_env.USER | default('docker')) }}"
+        mode:  "{{ item.mode | default('0755') }}"
+      with_items:
+        - name: "{{ ansible_env.BITCOIN_HOME | default('/var/lib/' + (ansible_env.USER | default('docker')) + '/.config/bitcoin') }}"
+    - name: "Set timezone to {{ ansible_env.BITCOIN_TIMEZONE }}"
+      file:
+        state: "link"
+        dest:  "/etc/localtime"
+        src:   "/usr/share/zoneinfo/{{ ansible_env.BITCOIN_TIMEZONE }}"
+        force: "yes"
     - template:
-        src:   "bitcoin.conf.j2"
-        dest:  "~/.bitcoin/bitcoin.conf"
+        src: "{{ item.name }}.j2"
+        dest: "{{ item.path }}/{{ item.name }}"
+        owner:  "{{ ansible_env.USER | default('docker') }}"
+        group: "{{ ansible_env.GROUP | default(ansible_env.USER | default('docker')) }}"
+        mode:  "{{ item.mode | default('0644') }}"
+      with_items:
+        - name: "bitcoin-entrypoint.sh"
+          path: "/usr/local/bin"
+          mode: "0755"
+        - name: "bitcoin.conf"
+          path: "{{ ansible_env.BITCOIN_HOME | default('/var/lib/' + (ansible_env.USER | default('docker')) + '/.config/bitcoin') }}"

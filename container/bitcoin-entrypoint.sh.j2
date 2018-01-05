@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+/usr/local/bin/bitcoind -conf={{ ansible_env.BITCOIN_HOME | default('/var/lib/' + (ansible_env.USER | default('docker')) + '/.config/bitcoin') }}/bitcoin.conf

@@ -12,8 +12,3 @@
         - "bitcoin-tx"
         - "bitcoind"
         - "test_bitcoin"
-    - user:
-        name:  "bitcoin"
-        state: "present"
-        home:  "/var/lib/bitcoin"
-        uid:   1061
