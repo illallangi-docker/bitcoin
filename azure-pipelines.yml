@@ -1,0 +1,29 @@
+# Docker image
+# Build a Docker image to run, deploy, or push to a container registry.
+# Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
+# https://docs.microsoft.com/vsts/pipelines/languages/docker
+
+name: $(Date:yyyy.MM.dd)$(Rev:.r)
+
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+variables:
+  imageName: 'illallangi.azurecr.io/$(build.DefinitionName):$(build.BuildNumber)'
+
+steps:
+- task: Docker@1
+  displayName: 'Build an image'
+  inputs:
+    imageName: '$(imageName)'
+- task: Docker@1
+  displayName: Login
+  inputs:
+    azureSubscriptionEndpoint: illallangi_arm
+    azureContainerRegistry: illallangi.azurecr.io
+    command: login
+- task: Docker@1
+  displayName: 'Push an image'
+  inputs:
+    command: 'push'
+    imageName: '$(imageName)'
